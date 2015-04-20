@@ -291,7 +291,7 @@
 
   function initHoop() {
     // add in hoop
-    var hoopGeometry = new THREE.RingGeometry(dim.hoop.r, dim.hoop.r + inches(1), 32);
+    var hoopGeometry = new THREE.TorusGeometry(dim.hoop.r, inches(1), 32, 32);
     var hoopMaterial = new THREE.MeshLambertMaterial({ color: 0xAA0000 });
     hoop = new THREE.Mesh(hoopGeometry, hoopMaterial);
 
@@ -302,7 +302,7 @@
     var backboardGeometry = new THREE.BoxGeometry(inches(60), inches(42), inches(4), 10, 10);
     var backboardMaterial = new THREE.MeshLambertMaterial({ color: 0x222222 });
     var backboard = new THREE.Mesh(backboardGeometry, backboardMaterial);
-    backboard.position.set(0, dim.hoop.r + inches(1), inches(16));
+    backboard.position.set(0, dim.hoop.r + inches(2), inches(16));
     backboard.rotation.x = -Math.PI / 2; // in backboard coordinates Z is up, x is the same, and y is length of court
 
     hoop.add(backboard);
