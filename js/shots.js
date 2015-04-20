@@ -127,7 +127,7 @@
     var spriteMaterial = new THREE.SpriteMaterial({
       map: new THREE.ImageUtils.loadTexture('img/glow.png'),
       useScreenCoordinates: false,
-      color: 0xffaa00,
+      color: 0xff8800,
       transparent: false,
       blending: THREE.AdditiveBlending
     });
@@ -139,19 +139,19 @@
 
 
   function initCourt() {
-    var floorTexture = new THREE.ImageUtils.loadTexture('img/floor.jpg');
-    floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
-    floorTexture.repeat.set(5,5);
     var floorGeometry = new THREE.BoxGeometry(dim.court.width, dim.court.length, 1, 10, 10);
-    // var material = new THREE.MeshLambertMaterial({ color: 0xCC884e });
-    var floorMaterial = new THREE.MeshLambertMaterial({ map: floorTexture });
+    var floorMaterial = new THREE.MeshLambertMaterial({ color: 0x222222 });
+    // var floorTexture = new THREE.ImageUtils.loadTexture('img/floor.jpg');
+    // floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
+    // floorTexture.repeat.set(5,5);
+    // var floorMaterial = new THREE.MeshLambertMaterial({ map: floorTexture });
     floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.set(0, -0.5, 0);
     floor.rotation.x = -Math.PI / 2; // in floor coordinates Z is up, x is the same, and y is length of court
     scene.add(floor);
 
     var axes = new THREE.AxisHelper(10);
-    axes.position.set(0,0,10);
+    axes.position.set(0, 0, 10);
     floor.add(axes);
 
     // <polyline fill="none" stroke="#999999" stroke-linecap="square" stroke-linejoin="bevel" stroke-miterlimit="10" points="30.059,0 30.059,137.064     "></polyline>
@@ -242,7 +242,7 @@
 
     function addComponent(component, otherSide) {
 
-      var materialProps = { color: 0x333333, side: THREE.DoubleSide };
+      var materialProps = { color: 0x666666, side: THREE.DoubleSide };
       var lineMaterial;
       if (component.dashed) {
         materialProps.dashSize = inches(14);
@@ -274,7 +274,7 @@
         geometry = new THREE.CircleGeometry(component.circle.r, 16, component.circle.thetaStart, component.circle.thetaLength);
       }
 
-      var line = new THREE.Line(geometry, lineMaterial, component.dashed ?  THREE.LinePieces : undefined );
+      var line = new THREE.Line(geometry, lineMaterial, component.dashed ?  THREE.LinePieces : undefined);
 
       var svgOrigin = { x: -250, y: -470, z: 1 };
       var compX = component.x, compY = component.y;
@@ -297,6 +297,16 @@
 
     hoop.position.set(dim.hoop.x, dim.hoop.y, dim.hoop.z);
     floor.add(hoop);
+
+    // add backboard
+    var backboardGeometry = new THREE.BoxGeometry(inches(60), inches(42), inches(4), 10, 10);
+    var backboardMaterial = new THREE.MeshLambertMaterial({ color: 0x222222 });
+    var backboard = new THREE.Mesh(backboardGeometry, backboardMaterial);
+    backboard.position.set(0, dim.hoop.r + inches(1), inches(16));
+    backboard.rotation.x = -Math.PI / 2; // in backboard coordinates Z is up, x is the same, and y is length of court
+
+    hoop.add(backboard);
+
   }
 
 
@@ -338,8 +348,6 @@
     ball.position.x = shotCurvePoints[shotCurveIndex].x;
     ball.position.y = shotCurvePoints[shotCurveIndex].y;
     ball.position.z = shotCurvePoints[shotCurveIndex].z;
-
-
 
     shotCurveIndex += 1;
     ball.rotation.x += 0.15;
