@@ -6,7 +6,8 @@
 
   var container, scene, camera, renderer, controls, stats;
   var clock = new THREE.Clock();
-  var floor, hoop, ball;
+  var floor, hoop;
+  var balls = [];
 
   var scale = 10; // 10 units = 1 foot
   var dim = {
@@ -25,7 +26,7 @@
     }
   };
 
-  var shotCurve, shotCurvePoints, shotCurveIndex;
+  var shotCurves = [], shotCurvesPoints = [], shotCurveIndexes = [];
 
   init();
   animate();
@@ -104,7 +105,9 @@
   function initGeometry() {
     initCourt();
 
-    initBall();
+    for (var i = 0; i < 10; i++) {
+      initBall();
+    }
 
     // var axes = new THREE.AxisHelper(50);
     // axes.position.set(0,0,0);
@@ -119,8 +122,9 @@
 
     var geometry = new THREE.SphereGeometry(dim.ball.r, 32, 16);
     var material = new THREE.MeshLambertMaterial({ map: texture });
-    ball = new THREE.Mesh(geometry, material);
+    var ball = new THREE.Mesh(geometry, material);
     ball.position.set(0, 0, dim.ball.r);
+    balls.push(ball);
     floor.add(ball);
 
     // basic glow effect
@@ -332,26 +336,35 @@
     var delta = clock.getDelta();
 
     // a new random shot
-    if (shotCurveIndex === undefined || shotCurveIndex === shotCurvePoints.length) {
-      var ballLoc = randomCourtLocation();
-      var ballHeight = ft(Math.random() * 10 + 25);
+    balls.forEach(function (ball, i) {
+      var shotCurve = shotCurves[i], shotCurvePoints = shotCurvesPoints[i], shotCurveIndex = shotCurveIndexes[i];
 
-      shotCurve = new THREE.QuadraticBezierCurve3(
-        new THREE.Vector3(ballLoc.x, ballLoc.y, ft(6)),
-        new THREE.Vector3(ballLoc.x + (dim.hoop.x - ballLoc.x) / 2, ballLoc.y + (dim.hoop.y - ballLoc.y) / 2, ballHeight),
-        new THREE.Vector3(dim.hoop.x, dim.hoop.y, dim.hoop.z)
-      );
-      shotCurvePoints = shotCurve.getPoints(60);
-      shotCurveIndex = 0;
-    }
+      if (shotCurveIndex === undefined || shotCurveIndex === shotCurvePoints.length) {
+        var ballLoc = randomCourtLocation();
+        var ballHeight = ft(Math.random() * 10 + 25);
 
-    ball.position.x = shotCurvePoints[shotCurveIndex].x;
-    ball.position.y = shotCurvePoints[shotCurveIndex].y;
-    ball.position.z = shotCurvePoints[shotCurveIndex].z;
+        shotCurve = new THREE.QuadraticBezierCurve3(
+          new THREE.Vector3(ballLoc.x, ballLoc.y, ft(6)),
+          new THREE.Vector3(ballLoc.x + (dim.hoop.x - ballLoc.x) / 2, ballLoc.y + (dim.hoop.y - ballLoc.y) / 2, ballHeight),
+          new THREE.Vector3(dim.hoop.x, dim.hoop.y, dim.hoop.z)
+        );
+        shotCurvePoints = shotCurve.getPoints(60);
+        shotCurveIndex = 0;
 
-    shotCurveIndex += 1;
-    ball.rotation.x += 0.15;
-    // ball.rotation.y += 0.01;
+        shotCurves[i] = shotCurve;
+        shotCurvesPoints[i] = shotCurvePoints;
+        shotCurveIndexes[i] = shotCurveIndex;
+      }
+
+      ball.position.x = shotCurvePoints[shotCurveIndex].x;
+      ball.position.y = shotCurvePoints[shotCurveIndex].y;
+      ball.position.z = shotCurvePoints[shotCurveIndex].z;
+
+      shotCurveIndexes[i] += 1;
+      ball.rotation.x += 0.15;
+      // ball.rotation.y += 0.01;
+    });
+
   }
 
   function render() {
