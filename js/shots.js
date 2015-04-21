@@ -341,6 +341,7 @@
 
       if (shotCurveIndex === undefined || shotCurveIndex === shotCurvePoints.length) {
         var ballLoc = randomCourtLocation();
+        // TODO: height should be determined as a function of distance to rim
         var ballHeight = ft(Math.random() * 10 + 25);
 
         shotCurve = new THREE.QuadraticBezierCurve3(
@@ -348,7 +349,8 @@
           new THREE.Vector3(ballLoc.x + (dim.hoop.x - ballLoc.x) / 2, ballLoc.y + (dim.hoop.y - ballLoc.y) / 2, ballHeight),
           new THREE.Vector3(dim.hoop.x, dim.hoop.y, dim.hoop.z)
         );
-        shotCurvePoints = shotCurve.getPoints(60);
+        // number of points determines time ball takes to reach the basket, should be determined by height of arc
+        shotCurvePoints = shotCurve.getPoints(ballHeight / 5);
         shotCurveIndex = 0;
 
         shotCurves[i] = shotCurve;
