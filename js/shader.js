@@ -146,6 +146,7 @@ var colors = new Float32Array( particleCount * 3 );
 var sizes = new Float32Array( particleCount );
 var alpha = new Float32Array( particleCount );
 var glow = new Float32Array( particleCount );
+var heights = new Float32Array( particleCount );
 
 var baseSize = 8.0;
 
@@ -162,7 +163,7 @@ for (var i = 0; i < particleCount / 2; i++) {
       particle = new THREE.Vector3(pX, pY, pZ)
       // particle.velocity = new THREE.Vector3(0, 0, 0);
 
-
+  var height = Math.random() * 10 + 25;
 
   // bigger glow particle
   particle.toArray(positions, i * 3);
@@ -171,7 +172,7 @@ for (var i = 0; i < particleCount / 2; i++) {
   alpha[i] = 0.5;
   glow[i] = 0.5;
   sizes[i] = baseSize + 8;
-
+  heights[i] = height;
   i++;
 
   // main particle
@@ -181,6 +182,7 @@ for (var i = 0; i < particleCount / 2; i++) {
   alpha[i] = 1;
   glow[i] = 0.75;
   sizes[i] = baseSize;
+  heights[i] = height;
 
   // add it to the geometry
   // particles.vertices.push(particle);
@@ -193,6 +195,7 @@ var geometry = new THREE.BufferGeometry();
       geometry.addAttribute( 'ca', new THREE.BufferAttribute( colors, 3 ) );
       geometry.addAttribute( 'alpha', new THREE.BufferAttribute( alpha, 1 ) );
       geometry.addAttribute( 'glow', new THREE.BufferAttribute( glow, 1 ) );
+      geometry.addAttribute( 'height', new THREE.BufferAttribute( heights, 1 ) );
 
 pMaterial2.attributes = geometry.attributes;
 // create the particle system
