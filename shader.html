@@ -64,6 +64,8 @@ void main()
 }
 </script>
 <script type="x-shader/x-vertex" id="vertexshader3">
+			uniform vec3 end;
+			uniform float time;
 
 			attribute float size;
 			attribute vec3 ca;
@@ -77,7 +79,8 @@ void main()
 				vColor = ca;
 				vAlpha = alpha;
 				vGlow = glow;
-				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+				// vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+				vec4 mvPosition = modelViewMatrix * vec4(mix(position, end, time), 1.0);
 
 				gl_PointSize = size;
 

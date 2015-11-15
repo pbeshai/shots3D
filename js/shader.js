@@ -53,16 +53,53 @@
   }   );
 
   // set up the sphere vars
-  var radius = 50, segments = 16, rings = 16;
+  var radius = 2, segments = 16, rings = 16;
   var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 });
 
   // create a new mesh with sphere geometry -
   // we will cover the sphereMaterial next!
   var sphere = new THREE.Mesh(
      new THREE.SphereGeometry(radius, segments, rings),
+     new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
+  sphere.position.set(-100, -100, 0);
+  scene.add(sphere);
+
+  sphere = new THREE.Mesh(
+     new THREE.SphereGeometry(radius, segments, rings),
       // material);
-     shaderMaterial);
+     new THREE.MeshBasicMaterial({ color: 0xff0000 }));
      // customMaterial);
+  sphere.position.set(100, -100, 0);
+  scene.add(sphere);
+
+
+  sphere = new THREE.Mesh(
+     new THREE.SphereGeometry(radius, segments, rings),
+      // material);
+     new THREE.MeshBasicMaterial({ color: 0x0000ff }));
+     // customMaterial);
+  sphere.position.set(100, 100, 0);
+  scene.add(sphere);
+
+  sphere = new THREE.Mesh(
+     new THREE.SphereGeometry(radius, segments, rings),
+      // material);
+     new THREE.MeshBasicMaterial({ color: 0x00ffff }));
+     // customMaterial);
+  sphere.position.set(-100, 100, 0);
+  scene.add(sphere);
+
+
+  sphere = new THREE.Mesh(
+     new THREE.SphereGeometry(radius, segments, rings),
+      // material);
+     new THREE.MeshBasicMaterial({ color: 0xffff00 }));
+     // customMaterial);
+  sphere.position.set(150, 0, 0);
+  scene.add(sphere);
+
+
+
   var sphereGlow = new THREE.Mesh(
     new THREE.SphereGeometry(radius, segments, rings),
       // material);
@@ -70,7 +107,6 @@
      customMaterial);
 sphereGlow.scale.multiplyScalar(1.2);
   // add the sphere to the scene
-  // scene.add(sphere);
   // scene.add(sphereGlow);
 var light = new THREE.PointLight(0xffffff);
   light.position.set(0,250,0);
@@ -79,7 +115,7 @@ var light = new THREE.PointLight(0xffffff);
 
 // create the particle variables
 var particleTexture = THREE.ImageUtils.loadTexture('img/particle.png');
-var particleCount = 300000,
+var particleCount = 3000,
     pMaterial = new THREE.PointCloudMaterial({
   color: 0xFFAA00,
   size: 80,
@@ -92,8 +128,10 @@ var particleCount = 300000,
 var pMaterial2 = new THREE.ShaderMaterial( {
       uniforms: {
         amplitude: { type: "f", value: 1.0 },
+        time:      { type: "f", value: 0.0 },
         color:     { type: "c", value: new THREE.Color( 0xff8800 ) },
-        texture:   { type: "t", value: particleTexture }
+        texture:   { type: "t", value: particleTexture },
+        end:       { type: "v3", value: new THREE.Vector3(150, 0, 0) }
       },
       vertexShader:   document.getElementById( 'vertexshader3' ).textContent,
       fragmentShader: document.getElementById( 'fragmentshader3' ).textContent,
@@ -174,9 +212,14 @@ scene.add(particleSystem);
 
 // animation loop
   function update() {
-
+    var time = particleSystem.material.uniforms.time;
+    if (time.value >= 1) {
+      time.value = 0;
+    } else {
+      time.value += 0.01;
+    }
     // add some rotation to the system
-    particleSystem.rotation.y += 0.01;
+    // particleSystem.rotation.y += 0.01;
 
     // var pCount = particleCount;
     // while(pCount--) {
@@ -211,68 +254,3 @@ scene.add(particleSystem);
 
 
   requestAnimationFrame(update);
-
-function sortPoints() {
-
-      var vector = new THREE.Vector3();
-
-      // Model View Projection matrix
-
-      var matrix = new THREE.Matrix4();
-      matrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
-      matrix.multiply( particleSystem.matrixWorld );
-
-      //
-
-      var geometry = particleSystem.geometry;
-
-      var index = geometry.getIndex();
-      var positions = geometry.getAttribute( 'position' ).array;
-      var length = positions.length / 3;
-
-      if ( index === null ) {
-
-        var array = new Uint16Array( length );
-
-        for ( var i = 0; i < length; i ++ ) {
-
-          array[ i ] = i;
-
-        }
-
-        index = new THREE.BufferAttribute( array, 1 );
-
-        geometry.setIndex( index );
-
-      }
-
-      var sortArray = [];
-
-      for ( var i = 0; i < length; i ++ ) {
-
-        vector.fromArray( positions, i * 3 );
-        vector.applyProjection( matrix );
-
-        sortArray.push( [ vector.z, i ] );
-
-      }
-
-      function numericalSort( a, b ) {
-
-        return b[ 0 ] - a[ 0 ];
-
-      }
-
-      sortArray.sort( numericalSort );
-
-      var indices = index.array;
-
-      for ( var i = 0; i < length; i ++ ) {
-
-        indices[ i ] = sortArray[ i ][ 1 ];
-
-      }
-
-      geometry.index.needsUpdate = true;
-
-    }
