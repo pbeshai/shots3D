@@ -106,9 +106,9 @@
   function initGeometry() {
     initCourt();
 
-    for (var i = 0; i < 10; i++) {
-      initBall();
-    }
+    // for (var i = 0; i < 10; i++) {
+    //   initBall();
+    // }
 
     initParticles();
 
@@ -134,7 +134,6 @@
     var particleMaterial = new THREE.PointCloudMaterial({ map: particleTexture, transparent: true, size: dim.ball.r*2 });
 
     particleSystem = new THREE.PointCloud(particles, particleMaterial);
-
     floor.add(particleSystem);
   }
 
@@ -377,47 +376,44 @@
     var delta = clock.getDelta();
 
     // a new random shot
-    balls.forEach(function (ball, i) {
-      var shotArcPoints = shotArcPointsArray[i], shotArcIndex = shotArcIndexArray[i];
+    // balls.forEach(function (ball, i) {
+    //   var shotArcPoints = shotArcPointsArray[i], shotArcIndex = shotArcIndexArray[i];
 
-      if (shotArcIndex === undefined || shotArcIndex === shotArcPoints.length) {
-        shotArcPoints = shotArcPointsArray[i] = generateShotArc();
-        shotArcIndex = shotArcIndexArray[i] = 0;
-      }
-      var currArcPoint = shotArcPoints[shotArcIndex];
+    //   if (shotArcIndex === undefined || shotArcIndex === shotArcPoints.length) {
+    //     shotArcPoints = shotArcPointsArray[i] = generateShotArc();
+    //     shotArcIndex = shotArcIndexArray[i] = 0;
+    //   }
+    //   var currArcPoint = shotArcPoints[shotArcIndex];
 
-      ball.position.x = currArcPoint.x;
-      ball.position.y = currArcPoint.y;
-      ball.position.z = currArcPoint.z;
+    //   ball.position.x = currArcPoint.x;
+    //   ball.position.y = currArcPoint.y;
+    //   ball.position.z = currArcPoint.z;
 
-      shotArcIndexArray[i] += 1;
-      ball.rotation.x += 0.15;
-      // ball.rotation.y += 0.01;
+    //   shotArcIndexArray[i] += 1;
+    //   ball.rotation.x += 0.15;
+    //   // ball.rotation.y += 0.01;
 
-      // particleSystem.rotation.x += delta / 10;
-    });
+    //   // particleSystem.rotation.x += delta / 10;
+    // });
 
-    particles.vertices.forEach(function (particle, i) {
-      var shotArcPoints = particleShotArcPointsArray[i], shotArcIndex = particleShotArcIndexArray[i];
+    // particles.vertices.forEach(function (particle, i) {
+    //   var shotArcPoints = particleShotArcPointsArray[i], shotArcIndex = particleShotArcIndexArray[i];
 
-      if (shotArcIndex === undefined || shotArcIndex === shotArcPoints.length) {
-        shotArcPoints = particleShotArcPointsArray[i] = generateShotArc();
-        shotArcIndex = particleShotArcIndexArray[i] = 0;
-      }
+    //   if (shotArcIndex === undefined || shotArcIndex === shotArcPoints.length) {
+    //     shotArcPoints = particleShotArcPointsArray[i] = generateShotArc();
+    //     shotArcIndex = particleShotArcIndexArray[i] = 0;
+    //   }
 
-      var currArcPoint = shotArcPoints[shotArcIndex];
-      if (i === 100) {
-        console.log(currArcPoint, particle);
-      }
-      particle.x = currArcPoint.x;
-      particle.y = currArcPoint.y;
-      particle.z = currArcPoint.z;
+    //   var currArcPoint = shotArcPoints[shotArcIndex];
+    //   particle.x = currArcPoint.x;
+    //   particle.y = currArcPoint.y;
+    //   particle.z = currArcPoint.z;
 
-      particleShotArcIndexArray[i] += 1;
+    //   particleShotArcIndexArray[i] += 1;
 
-      // particleSystem.rotation.x += delta / 10;
-    });
-    particles.verticesNeedUpdate = true;
+    //   // particleSystem.rotation.x += delta / 10;
+    // });
+    // particles.verticesNeedUpdate = true;
   }
 
   function render() {

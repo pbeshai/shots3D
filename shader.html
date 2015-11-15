@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+	<head>
+		<title>@@ Shader Test Shots Visualized</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<div id='container'>
+		</div>
+	<!-- Shaders -->
+	<script type="x-shader/x-vertex" id="vertexshader">
+
+		// switch on high precision floats
+		#ifdef GL_ES
+		precision highp float;
+		#endif
+
+		void main()
+		{
+			gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+		}
+
+	</script>
+
+	<script type="x-shader/x-fragment" id="fragmentshader">
+
+		#ifdef GL_ES
+		precision highp float;
+		#endif
+
+		void main()
+		{
+			gl_FragColor 	= vec4(1.0,0.0,1.0,1.0);
+		}
+
+	</script>
+
+<script id="vertexShader2" type="x-shader/x-vertex">
+uniform vec3 viewVector;
+uniform float c;
+uniform float p;
+varying float intensity;
+void main()
+{
+    vec3 vNormal = normalize( normalMatrix * normal );
+	vec3 vNormel = normalize( normalMatrix * viewVector );
+	intensity = pow( c - dot(vNormal, vNormel), p );
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+</script>
+
+<!-- fragment shader a.k.a. pixel shader -->
+<script id="fragmentShader2" type="x-shader/x-vertex">
+uniform vec3 glowColor;
+varying float intensity;
+void main()
+{
+	vec3 glow = glowColor * intensity;
+    gl_FragColor = vec4( glow, 1.0 );
+}
+</script>
+<script type="x-shader/x-vertex" id="vertexshader3">
+
+			attribute float size;
+			attribute vec3 ca;
+			attribute float alpha;
+			attribute float glow;
+			varying vec3 vColor;
+			varying float vAlpha;
+			varying float vGlow;
+			void main() {
+
+				vColor = ca;
+				vAlpha = alpha;
+				vGlow = glow;
+				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+				gl_PointSize = size;
+
+				// gl_PointSize= size * ( 10.0 / length( mvPosition.xyz ) );
+				// gl_PointSize = 20.0;
+				gl_Position = projectionMatrix * mvPosition;
+
+			}
+
+		</script>
+
+		<script type="x-shader/x-fragment" id="fragmentshader3">
+		#define M_PI 3.14159265358979323846264338327950
+		#define M_2PI 6.28318530717958647692528676655900
+		#define M_PI2 1.57079632679489661923132169163975
+			uniform vec3 color;
+			uniform sampler2D texture;
+			varying vec3 vColor;
+			varying float vAlpha;
+			varying float vGlow; // 0.5 for middle, 0.75 for very little, 0.25 for a lot
+			void main() {
+			vec2 tmpCoord = vGlow * cos(M_2PI * gl_PointCoord + M_PI) + 0.5;
+			float alpha = tmpCoord.x * tmpCoord.y;
+			// float alpha = 0.5;
+
+			gl_FragColor = vec4(vColor, vAlpha*alpha);
+				// vec4 color = vec4( color * vColor, 1.0 ) * texture2D( texture, gl_PointCoord );
+				// gl_FragColor = color;
+			  // gl_FragColor 	= vec4(1, 0.6, 0,0.4);
+			}
+
+		</script>
+		<script type='x-shader/x-vertex' id='vertexshader4'>
+		#define M_PI 3.14159265358979323846264338327950
+		#define M_2PI 6.28318530717958647692528676655900
+		#define M_PI2 1.57079632679489661923132169163975
+		#define EPS 0.0001 #define EQUALS(A,B) ( abs((A)-(B)) < EPS )
+		#define EQUALSZERO(A) ( ((A)<EPS) && ((A)>-EPS) )
+		#define PS_CAM_MAX_DIST 12.0
+		varying vec3 vColor;
+		uniform sampler2D tPos;
+		uniform float uTime;
+		uniform float uPointSize;
+		uniform vec3 uColor1;
+		uniform vec3 uColor2;
+		uniform float uColorFreq;
+		uniform float uColorSpeed;
+		void main() {
+			vColor = mix(uColor1, uColor2, sin(uColorSpeed*uTime + uColorFreq*position.z*M_2PI)/2.0+0.5);
+			vec4 posSample = texture2D(tPos, position.xy);
+			vec3 pos = posSample.rgb;
+			vec3 camToPos = pos - cameraPosition;
+			float camDist = length(camToPos);
+			gl_PointSize = max(uPointSize * PS_CAM_MAX_DIST/camDist, 1.0);
+			gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+		}
+		</script>
+		<script type="x-shader/x-fragment" id="fragmentshader4">
+		#define M_PI 3.14159265358979323846264338327950
+		#define M_2PI 6.28318530717958647692528676655900
+		#define M_PI2 1.57079632679489661923132169163975
+		#define EPS 0.0001
+		#define EQUALS(A,B) ( abs((A)-(B)) < EPS )
+		#define EQUALSZERO(A) ( ((A)<EPS) && ((A)>-EPS) )
+
+		varying vec3 vColor;
+		uniform float uTime;
+		uniform float uAlpha;
+		void main() {
+			// calc alpha for shape
+			vec2 tmpCoord = 0.5 * cos(M_2PI*gl_PointCoord+M_PI) + 0.5;
+			float alpha = tmpCoord.x * tmpCoord.y;
+			gl_FragColor = vec4(vColor, uAlpha*alpha);
+		}
+		</script>
+
+		<script src="js/jquery.min.js"></script>
+
+		<script src="js/three73.js"></script>
+		<script src="js/three.stats.js"></script>
+		<script src="js/Tween.js"></script>
+		<script src="js/Sparks.js"></script>
+
+		<script src="js/three.orbitcontrols.js"></script>
+		<script src="js/threex.windowresize.js"></script>
+		<script src="js/threex.fullscreen.js"></script>
+		<script src="js/util.js"></script>
+		<!-- <script src="js/shots.js"></script> -->
+		<script src="js/shader.js"></script>
+	</body>
+</html>
