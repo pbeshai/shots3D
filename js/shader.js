@@ -157,7 +157,8 @@ for (var i = 0; i < particleCount / 2; i++) {
   // position values, -250 -> 250
   var pX = Math.random() * 500 - 250,
       pY = Math.random() * 500 - 250,
-      pZ = Math.random() * 250 - 250,
+      // pZ = Math.random() * 250 - 250,
+      pZ = 0,
       particle = new THREE.Vector3(pX, pY, pZ)
       // particle.velocity = new THREE.Vector3(0, 0, 0);
 
