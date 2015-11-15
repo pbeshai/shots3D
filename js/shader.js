@@ -163,7 +163,7 @@ for (var i = 0; i < particleCount / 2; i++) {
       particle = new THREE.Vector3(pX, pY, pZ)
       // particle.velocity = new THREE.Vector3(0, 0, 0);
 
-  var height = Math.random() * 10 + 25;
+  var height = 10 * (Math.random() * 10 + 25);
 
   // bigger glow particle
   particle.toArray(positions, i * 3);
